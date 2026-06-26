@@ -1,54 +1,59 @@
-# Remotion video
+# 🎬 Motion Studio
 
-<p align="center">
-  <a href="https://github.com/remotion-dev/logo">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/remotion-dev/logo/raw/main/animated-logo-banner-dark.apng">
-      <img alt="Animated Remotion Logo" src="https://github.com/remotion-dev/logo/raw/main/animated-logo-banner-light.gif">
-    </picture>
-  </a>
-</p>
+A tiny, local text-animation tool for video ads. Pick a template, type your text
+(Nepali / English / mixed), set your brand colors and logo, preview it live, and
+export a ready-to-use video clip — with a solid background or a transparent overlay
+for editors like CapCut.
 
-Welcome to your Remotion project!
+Built with **Remotion** + **Next.js**. Runs entirely on your own machine; rendering
+is free (no cloud).
+
+## Features
+
+- 🎨 **Brand Kit** — upload a logo, set primary/accent brand colors and brand name (saved in your browser)
+- ✍️ **Bilingual text** — Devanagari (Nepali) renders correctly via Mukta; Latin via Poppins
+- 🧩 **Templates** — Hook Title Card · Logo + Contact Card · generic Text Animation (7 styles)
+- 📐 **Aspect ratios** — Vertical 9:16, Horizontal 16:9, Square 1:1 (responsive layouts that auto-fit)
+- 🔤 **Per-template controls** — background color, text color, font size, font weight, duration
+- 👁️ **Live preview** — instant playback via the Remotion Player
+- ⬇️ **Local export** — MP4 (with background) or transparent `.MOV` (ProRes 4444 overlay)
+
+## Getting started
+
+```bash
+npm install
+npm run studio
+```
+
+Open **http://localhost:3333**, design your clip, and click export. Files are saved to the `out/` folder.
+
+> The first export bundles the project (~20s); subsequent exports are fast.
+
+## Project layout
+
+| Path | What |
+|---|---|
+| `app/StudioApp.tsx` | The studio UI + live preview |
+| `app/api/render/route.ts` | Local render endpoint (MP4 / transparent MOV) |
+| `src/studio/templateMeta.ts` | Template list + which controls each template shows |
+| `src/BrandTitle.tsx`, `src/BrandCard.tsx`, `src/TextAnimation.tsx` | The animation templates |
+| `src/fonts.ts` | Poppins (English) + Mukta (Nepali / Devanagari) |
+
+## Add your own template
+
+1. Create a parameterized Remotion component in `src/`
+2. Register it in `src/Root.tsx`
+3. Add an entry (label, controls, default props) in `src/studio/templateMeta.ts`
+4. Map its `compositionId` → component in `src/studio/registry.tsx`
+
+It then appears in the studio automatically.
 
 ## Commands
 
-**Install Dependencies**
-
-```console
-npm i
-```
-
-**Start Preview**
-
-```console
-npm run dev
-```
-
-**Render video**
-
-```console
-npx remotion render
-```
-
-**Upgrade Remotion**
-
-```console
-npx remotion upgrade
-```
-
-## Docs
-
-Get started with Remotion by reading the [fundamentals page](https://www.remotion.dev/docs/the-fundamentals).
-
-## Help
-
-We provide help on our [Discord server](https://discord.gg/6VzzNDwUwV).
-
-## Issues
-
-Found an issue with Remotion? [File an issue here](https://github.com/remotion-dev/remotion/issues/new).
+- `npm run studio` — run the web studio (http://localhost:3333)
+- `npm run remotion` — open Remotion Studio (developer view of the raw compositions)
+- `npm run studio:build` — production build of the web app
 
 ## License
 
-Note that for some entities a company license is needed. [Read the terms here](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md).
+UNLICENSED — free to use and adapt.

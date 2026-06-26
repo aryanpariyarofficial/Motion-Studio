@@ -2,6 +2,12 @@ node_modules
 dist
 .DS_Store
 .env
+.env*.local
+
+# Next.js
+.next
+next-env.d.ts
+*.tsbuildinfo
 
 # Ignore the output video from Git but not videos you import into src/.
 out
