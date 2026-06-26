@@ -7,6 +7,7 @@ import { Captions } from "./Captions";
 import { OfferCard } from "./OfferCard";
 import { LowerThird } from "./LowerThird";
 import { ReviewCard } from "./ReviewCard";
+import { CustomScene } from "./CustomScene";
 
 const DIMS: Record<TextAnimationProps["orientation"], [number, number]> = {
   vertical: [1080, 1920],
@@ -193,6 +194,25 @@ export const RemotionRoot: React.FC = () => {
           textColor: "#0E3A33",
           fontScale: 1,
           durationInSeconds: 4,
+        }}
+      />
+
+      {/* custom layer-based scene (from the editor) */}
+      <Composition
+        id="CustomScene"
+        component={CustomScene}
+        calculateMetadata={durMeta(4)}
+        fps={FPS}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          durationInSeconds: 4,
+          scene: {
+            background: "#101826",
+            layers: [
+              { id: "a", type: "text", text: "Your text", xPct: 50, yPct: 50, sizePct: 9, color: "#FFFFFF", fontKey: "mukta", fontWeight: 800, align: "center", animateIn: "pop", delay: 0 },
+            ],
+          },
         }}
       />
     </>

@@ -209,6 +209,7 @@ export default function StudioApp() {
           <span className="sub">Animated text & brand assets for your video ads</span>
         </div>
         <div className="topbar-right">
+          <a href="/editor" className="link btnlink">✏️ Custom Editor</a>
           <span className="seg-label">Aspect</span>
           <div className="seg">
             {(Object.keys(ASPECTS) as AspectKey[]).map((k) => (

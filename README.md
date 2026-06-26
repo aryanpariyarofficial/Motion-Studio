@@ -17,7 +17,8 @@ Built with **[Remotion](https://www.remotion.dev/)** + **[Next.js](https://nextj
 - 🎨 **Brand Kit** — upload a logo and **brand colors are auto-picked from it**; set brand name once and it applies to every template.
 - 👥 **Multiple brand kits** — save a separate kit per client and switch between them instantly.
 - ✍️ **Bilingual text** — Devanagari (Nepali) renders correctly via **Mukta**; Latin via **Poppins**. Mixed Nepali + English lines just work.
-- 🧩 **Templates** — Hook Title Card · Logo + Contact Card · generic Text Animation (7 styles).
+- 🧩 **7 templates** — Hook Title · Logo + Contact Card · Text Animation (7 styles) · UGC Captions · CTA/Offer Card · Lower Third · Review/Stars Card.
+- ✏️ **Custom editor** — build your own free-form, layer-based designs (text + image layers, drag to position, per-layer animation).
 - 📐 **Aspect ratios** — Vertical 9:16, Horizontal 16:9, Square 1:1 — responsive layouts that **auto-fit** the text.
 - ⚡ **Batch export** — render all three aspect ratios (9:16 · 1:1 · 16:9) in one click.
 - 🔤 **Per-template controls** — background color, text color, font size, font weight, duration.
@@ -71,6 +72,18 @@ Open **http://localhost:3333** in your browser.
 | **Hook Title Card** | Bold branded tagline with particle field, brand kicker and underline. Great opener/hook. |
 | **Logo + Contact Card** | Animated logo build + contact rows (location / email / phone). Intro or outro. |
 | **Text Animation** | Generic engine with 7 styles: Kinetic Scale, Word Pop, Fade + Slide Up, Letter Cascade, Typewriter, Glitch, Neon Glow. |
+| **UGC Captions** | Word-by-word build-up with the active word highlighted — the staple of UGC ads. |
+| **CTA / Offer Card** | Big offer headline + subtitle + call-to-action button + starburst. |
+| **Lower Third** | Transparent name/role tag that slides in near the bottom. |
+| **Review / Stars Card** | Animated star rating with a customer quote and name. |
+
+### ✏️ Custom Editor
+
+Open **Custom Editor** (top-right) to build your own layout from scratch — add text and
+image/logo layers, **drag them to position**, and set each layer's color, font, size,
+animation and timing. Save it and export like any other clip.
+
+![Custom Editor](docs/ui-editor.png)
 
 ---
 
@@ -110,11 +123,10 @@ It then appears in the studio automatically.
 
 See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the full plan. Highlights:
 
-- UGC word-by-word captions (paste a script → timed captions)
-- More templates: CTA / price cards, lower-thirds, review cards
+- Auto captions from a voiceover (Whisper)
 - Logo background removal
 - Sound / music baked into exports
-- Custom-template editor (free-form, layer-based layouts)
+- Custom editor v2 — resize/rotate handles, shapes, out-animations, timeline
 
 ---
 

@@ -21,16 +21,16 @@ function getServeUrl() {
 
 export async function POST(req: Request) {
   try {
-    const { templateId, inputProps, format, width, height, durationInFrames } = await req.json();
-    const meta = getTemplate(templateId);
-    if (!meta) {
+    const { templateId, compositionId: directId, inputProps, format, width, height, durationInFrames } = await req.json();
+    const compositionId = directId || getTemplate(templateId)?.compositionId;
+    if (!compositionId) {
       return Response.json({ error: `Unknown template: ${templateId}` }, { status: 400 });
     }
 
     const serveUrl = await getServeUrl();
     const selected = await selectComposition({
       serveUrl,
-      id: meta.compositionId,
+      id: compositionId,
       inputProps,
     });
 
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     const isTransparent = format === "mov";
     const ext = isTransparent ? "mov" : "mp4";
     const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const fileName = `${templateId}-${stamp}.${ext}`;
+    const fileName = `${templateId || compositionId}-${stamp}.${ext}`;
     const outputLocation = path.join(process.cwd(), "out", fileName);
 
     await renderMedia({

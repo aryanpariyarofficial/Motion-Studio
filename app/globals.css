@@ -434,6 +434,95 @@ textarea.control {
   margin-top: 6px;
 }
 
+.link {
+  color: var(--muted);
+  font-size: 12px;
+  text-decoration: none;
+}
+.link:hover {
+  color: var(--orange);
+}
+.topbar .link.btnlink {
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--text);
+}
+
+/* editor */
+.layers {
+  list-style: none;
+  margin: 0 0 4px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.layer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.layer.sel {
+  border-color: var(--orange);
+}
+.layer-name {
+  font-size: 12.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.layer-acts {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.layer-acts button {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 5px;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.handle {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 13px;
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.handle.sel {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(232, 73, 31, 0.3);
+}
+.handle:active {
+  cursor: grabbing;
+}
+
 .colorpick {
   flex: 1;
   min-width: 80px;
