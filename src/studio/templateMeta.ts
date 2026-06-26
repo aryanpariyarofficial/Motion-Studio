@@ -135,6 +135,113 @@ export const TEMPLATES: TemplateMeta[] = [
       durationInSeconds: 3,
     },
   },
+  {
+    id: "captions",
+    label: "UGC Captions",
+    description: "Word-by-word captions that build up with the active word highlighted.",
+    compositionId: "Captions",
+    controls: [
+      { key: "text", label: "Caption text", type: "textarea", placeholder: "यो प्रोडक्ट साँच्चै राम्रो छ" },
+      { key: "textColor", label: "Text color", type: "color" },
+      { key: "transparentBackground", label: "Transparent background", type: "checkbox" },
+      { key: "bgColor", label: "Background color (if not transparent)", type: "color" },
+      { key: "boxBehind", label: "Dark box behind text", type: "checkbox" },
+      { key: "position", label: "Position", type: "select", options: [
+        { value: "center", label: "Center" },
+        { value: "bottom", label: "Bottom" },
+      ] },
+      ...fontControls,
+      { key: "durationInSeconds", label: "Duration (sec)", type: "slider", min: 1, max: 10, step: 0.5 },
+    ],
+    defaultProps: {
+      text: "यो प्रोडक्ट साँच्चै राम्रो छ",
+      textColor: "#FFFFFF",
+      transparentBackground: true,
+      bgColor: "#101826",
+      boxBehind: true,
+      position: "center",
+      fontScale: 1,
+      fontWeight: 800,
+      durationInSeconds: 3,
+    },
+  },
+  {
+    id: "offerCard",
+    label: "CTA / Offer Card",
+    description: "Big offer headline, subtitle and a call-to-action button.",
+    compositionId: "OfferCard",
+    controls: [
+      { key: "headline", label: "Headline", type: "text", placeholder: "50% OFF" },
+      { key: "subtitle", label: "Subtitle", type: "text" },
+      { key: "ctaText", label: "Button text", type: "text", placeholder: "ORDER NOW" },
+      { key: "bgColor", label: "Background color", type: "color" },
+      { key: "textColor", label: "Text color", type: "color" },
+      ...fontControls,
+      { key: "durationInSeconds", label: "Duration (sec)", type: "slider", min: 1, max: 6, step: 0.5 },
+    ],
+    defaultProps: {
+      headline: "50% OFF",
+      subtitle: "On all renovation packages this month",
+      ctaText: "ORDER NOW",
+      bgColor: "#0E3A33",
+      textColor: "#FFFFFF",
+      fontScale: 1,
+      fontWeight: 900,
+      durationInSeconds: 3,
+    },
+  },
+  {
+    id: "lowerThird",
+    label: "Lower Third (name tag)",
+    description: "Transparent name/role tag that slides in near the bottom.",
+    compositionId: "LowerThird",
+    controls: [
+      { key: "title", label: "Title / name", type: "text", placeholder: "Aashray Construction" },
+      { key: "subtitle", label: "Subtitle / role", type: "text" },
+      { key: "side", label: "Side", type: "select", options: [
+        { value: "left", label: "Left" },
+        { value: "right", label: "Right" },
+      ] },
+      { key: "barColor", label: "Bar color", type: "color" },
+      { key: "textColor", label: "Text color", type: "color" },
+      ...fontControls,
+      { key: "durationInSeconds", label: "Duration (sec)", type: "slider", min: 1, max: 8, step: 0.5 },
+    ],
+    defaultProps: {
+      title: "AASHRAY Construction",
+      subtitle: "Renovation & Interior Experts",
+      side: "left",
+      barColor: "#0E3A33",
+      textColor: "#FFFFFF",
+      fontScale: 1,
+      fontWeight: 800,
+      durationInSeconds: 4,
+    },
+  },
+  {
+    id: "reviewCard",
+    label: "Review / Stars Card",
+    description: "Animated star rating with a customer quote and name.",
+    compositionId: "ReviewCard",
+    controls: [
+      { key: "quote", label: "Quote", type: "textarea", placeholder: "Excellent work and on time!" },
+      { key: "name", label: "Customer name", type: "text" },
+      { key: "rating", label: "Stars", type: "slider", min: 1, max: 5, step: 1 },
+      { key: "bgColor", label: "Background color", type: "color" },
+      { key: "textColor", label: "Text color", type: "color" },
+      { key: "fontScale", label: "Font size", type: "slider", min: 0.4, max: 1.8, step: 0.05 },
+      { key: "durationInSeconds", label: "Duration (sec)", type: "slider", min: 2, max: 8, step: 0.5 },
+    ],
+    defaultProps: {
+      quote: "Excellent work, finished on time and on budget!",
+      name: "Sita Sharma",
+      rating: 5,
+      bgColor: "#F1EBE1",
+      textColor: "#0E3A33",
+      fontScale: 1,
+      durationInSeconds: 4,
+    },
+  },
 ];
 
 export const getTemplate = (id: string) => TEMPLATES.find((t) => t.id === id);
@@ -165,8 +272,9 @@ export function buildComposition(
   }
   if (meta.compositionId === "TextAnimation") {
     inputProps.orientation = dims.orientation;
-    if (props.transparentBackground) inputProps.bgColor = "transparent";
   }
+  // generic: any template with the transparent toggle on renders see-through
+  if (props.transparentBackground) inputProps.bgColor = "transparent";
 
   const seconds = typeof props.durationInSeconds === "number" ? props.durationInSeconds : 3;
 
