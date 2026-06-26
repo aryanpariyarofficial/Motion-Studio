@@ -8,6 +8,7 @@ import { OfferCard } from "./OfferCard";
 import { LowerThird } from "./LowerThird";
 import { ReviewCard } from "./ReviewCard";
 import { CustomScene } from "./CustomScene";
+import { TypingList } from "./TypingList";
 
 const DIMS: Record<TextAnimationProps["orientation"], [number, number]> = {
   vertical: [1080, 1920],
@@ -195,6 +196,29 @@ export const RemotionRoot: React.FC = () => {
           textColor: "#0E3A33",
           fontScale: 1,
           durationInSeconds: 4,
+        }}
+      />
+
+      {/* typing list of points */}
+      <Composition
+        id="TypingList"
+        component={TypingList}
+        calculateMetadata={durMeta(5)}
+        fps={FPS}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          heading: "यस तालिममा",
+          items: "कम्पनी दर्ता\nवार्षिक कर विवरण\nVAT / PAN दर्ता",
+          autoNumber: true,
+          bgColor: "#FFFFFF",
+          textColor: "#16314A",
+          accentColor: "#E8941F",
+          highlightColor: "#FFE100",
+          headingColor: "#16314A",
+          fontScale: 1,
+          fontWeight: 700,
+          durationInSeconds: 5,
         }}
       />
 

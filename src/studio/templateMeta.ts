@@ -249,6 +249,35 @@ export const TEMPLATES: TemplateMeta[] = [
       durationInSeconds: 4,
     },
   },
+  {
+    id: "typingList",
+    label: "Typing List (points)",
+    description: "Heading + points that type in one by one with an animated box border.",
+    compositionId: "TypingList",
+    controls: [
+      { key: "heading", label: "Heading", type: "text", placeholder: "यस तालिममा" },
+      { key: "items", label: "List items (one per line)", type: "textarea", placeholder: "कम्पनी दर्ता\nवार्षिक कर\nVAT/PAN" },
+      { key: "autoNumber", label: "Auto-number (१. २. ३.)", type: "checkbox" },
+      { key: "bgColor", label: "Background color", type: "color" },
+      { key: "headingColor", label: "Heading color", type: "color" },
+      { key: "highlightColor", label: "Heading highlight", type: "color" },
+      { key: "textColor", label: "Item text color", type: "color" },
+      ...fontControls,
+      { key: "durationInSeconds", label: "Duration (sec)", type: "slider", min: 2, max: 12, step: 0.5 },
+    ],
+    defaultProps: {
+      heading: "यस तालिममा",
+      items: "कम्पनी दर्ता\nवार्षिक कर विवरण\nVAT / PAN दर्ता",
+      autoNumber: true,
+      bgColor: "#FFFFFF",
+      headingColor: "#16314A",
+      highlightColor: "#FFE100",
+      textColor: "#16314A",
+      fontScale: 1,
+      fontWeight: 700,
+      durationInSeconds: 5,
+    },
+  },
 ];
 
 export const getTemplate = (id: string) => TEMPLATES.find((t) => t.id === id);
