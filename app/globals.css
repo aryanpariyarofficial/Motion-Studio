@@ -523,13 +523,104 @@ textarea.control {
   cursor: grabbing;
 }
 
+.mini {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  width: 28px;
+  height: 26px;
+  font-size: 14px;
+  margin-left: 4px;
+}
+.mini:hover { border-color: var(--orange); }
+
+.add-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+/* selection box + handles */
+.selbox {
+  position: absolute;
+  border: 1.5px solid var(--orange);
+  pointer-events: none;
+  box-sizing: border-box;
+}
+.selbox .rs {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border: 1.5px solid var(--orange);
+  border-radius: 2px;
+  pointer-events: auto;
+  touch-action: none;
+}
+.selbox .rs.tl { left: -7px; top: -7px; cursor: nwse-resize; }
+.selbox .rs.tr { right: -7px; top: -7px; cursor: nesw-resize; }
+.selbox .rs.bl { left: -7px; bottom: -7px; cursor: nesw-resize; }
+.selbox .rs.br { right: -7px; bottom: -7px; cursor: nwse-resize; }
+.selbox .rot-handle {
+  position: absolute;
+  left: 50%;
+  top: -28px;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  background: var(--orange);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+}
+.selbox .rot-handle::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  width: 1.5px;
+  height: 14px;
+  background: var(--orange);
+}
+
 .timeline {
   width: 100%;
-  max-width: 560px;
+  max-width: 620px;
   margin-top: 14px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+.tl-bar {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  background: linear-gradient(90deg, var(--teal), var(--orange));
+  border-radius: 4px;
+  min-width: 4px;
+  cursor: grab;
+  touch-action: none;
+}
+.tl-edge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 7px;
+  cursor: ew-resize;
+  touch-action: none;
+}
+.tl-edge.l { left: -2px; }
+.tl-edge.r { right: -2px; }
+.tl-playhead {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: #fff;
+  pointer-events: none;
 }
 .tl-row {
   display: flex;

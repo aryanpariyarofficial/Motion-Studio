@@ -8,8 +8,8 @@ const browser = await puppeteer.launch({
 });
 const page = await browser.newPage();
 await page.goto("http://localhost:3333/editor", { waitUntil: "networkidle2", timeout: 60000 });
-await page.waitForSelector(".handle", { timeout: 30000 });
-await sleep(2500);
+await page.waitForSelector(".player-wrap", { timeout: 30000 });
+await sleep(3500); // let it settle + measure the selection box
 await page.screenshot({ path: "docs/ui-editor.png" });
 console.log("shot docs/ui-editor.png");
 await browser.close();
