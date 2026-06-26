@@ -25,6 +25,17 @@ export const DEFAULT_BRAND: Brand = {
   accent: "#E8491F",
 };
 
+// one-click color palettes — applied to the brand + current template's color props
+export type Theme = { name: string; bg: string; text: string; accent: string; primary: string; highlight: string };
+export const THEMES: Theme[] = [
+  { name: "Cream", bg: "#F1EBE1", text: "#0E3A33", accent: "#E8491F", primary: "#0E3A33", highlight: "#FFE100" },
+  { name: "Midnight", bg: "#0B1220", text: "#FFFFFF", accent: "#3DA9FC", primary: "#16314A", highlight: "#3DA9FC" },
+  { name: "Forest", bg: "#082420", text: "#FFFFFF", accent: "#E8491F", primary: "#0E3A33", highlight: "#FFD60A" },
+  { name: "Sunset", bg: "#1A1124", text: "#FFFFFF", accent: "#FF7A00", primary: "#7A1FA2", highlight: "#FFB703" },
+  { name: "Mono", bg: "#111111", text: "#FFFFFF", accent: "#FFFFFF", primary: "#777777", highlight: "#FFE100" },
+  { name: "Paper", bg: "#FFFFFF", text: "#16314A", accent: "#E8941F", primary: "#16314A", highlight: "#FFE100" },
+];
+
 export type Control =
   | { key: string; label: string; type: "text" | "textarea" | "color"; placeholder?: string }
   | { key: string; label: string; type: "number" | "slider"; min: number; max: number; step: number }
@@ -39,6 +50,18 @@ export type TemplateMeta = {
   controls: Control[];
   defaultProps: Record<string, unknown>;
 };
+
+// plain font list (kept here so this file stays import-free of the font loaders)
+const FONT_SELECT = [
+  { value: "mukta", label: "Mukta (Nepali + EN)" },
+  { value: "poppins", label: "Poppins (clean)" },
+  { value: "anton", label: "Anton (heavy)" },
+  { value: "bebas", label: "Bebas Neue (tall)" },
+  { value: "oswald", label: "Oswald (condensed)" },
+  { value: "playfair", label: "Playfair (elegant)" },
+  { value: "caveat", label: "Caveat (handwritten)" },
+  { value: "bangers", label: "Bangers (comic)" },
+];
 
 const ANIMATION_OPTIONS = [
   { value: "kineticScale", label: "Kinetic Scale" },
@@ -113,6 +136,7 @@ export const TEMPLATES: TemplateMeta[] = [
     controls: [
       { key: "text", label: "Text (Nepali / English)", type: "textarea", placeholder: "तपाईंको पाठ यहाँ" },
       { key: "animation", label: "Animation style", type: "select", options: ANIMATION_OPTIONS },
+      { key: "fontKey", label: "Font", type: "select", options: FONT_SELECT },
       { key: "textColor", label: "Text color", type: "color" },
       { key: "transparentBackground", label: "Transparent background", type: "checkbox" },
       { key: "bgColor", label: "Background color (if not transparent)", type: "color" },
@@ -257,15 +281,35 @@ export const TEMPLATES: TemplateMeta[] = [
     controls: [
       { key: "heading", label: "Heading", type: "text", placeholder: "यस तालिममा" },
       { key: "items", label: "List items (one per line)", type: "textarea", placeholder: "कम्पनी दर्ता\nवार्षिक कर\nVAT/PAN" },
-      { key: "autoNumber", label: "Auto-number (१. २. ३.)", type: "checkbox" },
-      { key: "showCaret", label: "Show typing cursor", type: "checkbox" },
-      { key: "borderStyle", label: "Border style", type: "select", options: [
+      { key: "marker", label: "Bullet marker", type: "select", options: [
+        { value: "number", label: "Numbers (१. २. ३.)" },
+        { value: "check", label: "Check ✓" },
+        { value: "dot", label: "Dot ●" },
+        { value: "none", label: "None" },
+      ] },
+      { key: "headingStyle", label: "Heading style", type: "select", options: [
+        { value: "highlight", label: "Highlighter" },
+        { value: "underline", label: "Underline" },
+        { value: "box", label: "Box" },
+        { value: "plain", label: "Plain" },
+      ] },
+      { key: "borderStyle", label: "Item border style", type: "select", options: [
         { value: "box", label: "Box (rounded rectangle)" },
         { value: "underline", label: "Underline" },
+        { value: "dashed", label: "Dashed box" },
         { value: "none", label: "None" },
       ] },
       { key: "borderWidth", label: "Border width (px)", type: "slider", min: 0, max: 14, step: 0.5 },
       { key: "cornerRadius", label: "Corner roundness", type: "slider", min: 0, max: 40, step: 1 },
+      { key: "itemFill", label: "Filled highlight behind items", type: "checkbox" },
+      { key: "activeEmphasis", label: "Emphasize the typing item", type: "checkbox" },
+      { key: "showCaret", label: "Show typing cursor", type: "checkbox" },
+      { key: "backgroundStyle", label: "Background style", type: "select", options: [
+        { value: "grid", label: "Grid" },
+        { value: "dots", label: "Dots" },
+        { value: "gradient", label: "Soft gradient" },
+        { value: "plain", label: "Plain" },
+      ] },
       { key: "bgColor", label: "Background color", type: "color" },
       { key: "headingColor", label: "Heading color", type: "color" },
       { key: "highlightColor", label: "Heading highlight", type: "color" },
@@ -276,11 +320,15 @@ export const TEMPLATES: TemplateMeta[] = [
     defaultProps: {
       heading: "यस तालिममा",
       items: "कम्पनी दर्ता\nवार्षिक कर विवरण\nVAT / PAN दर्ता",
-      autoNumber: true,
+      marker: "number",
+      headingStyle: "highlight",
       showCaret: false,
       borderStyle: "box",
       borderWidth: 3,
       cornerRadius: 10,
+      itemFill: false,
+      activeEmphasis: false,
+      backgroundStyle: "grid",
       bgColor: "#FFFFFF",
       headingColor: "#16314A",
       highlightColor: "#FFE100",

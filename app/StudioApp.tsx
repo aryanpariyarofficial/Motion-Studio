@@ -12,6 +12,8 @@ import {
   DEFAULT_BRAND,
   getTemplate,
   TEMPLATES,
+  THEMES,
+  Theme,
 } from "../src/studio/templateMeta";
 import { extractBrandColors } from "../src/studio/extractColors";
 import { downloadBlob, filenameFromResponse } from "../src/studio/download";
@@ -83,6 +85,19 @@ export default function StudioApp() {
     setAllProps((prev) => ({ ...prev, [templateId]: { ...prev[templateId], [key]: value } }));
   const setBrandField = (key: keyof Brand, value: unknown) =>
     setKits((ks) => ks.map((k) => (k.id === activeId ? { ...k, [key]: value } : k)));
+
+  const applyTheme = (t: Theme) => {
+    setBrand((b) => ({ ...b, primary: t.primary, accent: t.accent }));
+    setAllProps((prev) => {
+      const p = { ...prev[templateId] };
+      if ("bgColor" in p) p.bgColor = t.bg;
+      if ("textColor" in p) p.textColor = t.text;
+      if ("headingColor" in p) p.headingColor = t.text;
+      if ("highlightColor" in p) p.highlightColor = t.highlight;
+      if (p.transparentBackground) p.transparentBackground = false;
+      return { ...prev, [templateId]: p };
+    });
+  };
 
   const addKit = () => {
     const k: Kit = { ...DEFAULT_BRAND, name: "New Brand", id: newId() };
@@ -282,6 +297,20 @@ export default function StudioApp() {
                 <ColorPick label="Primary" value={brand.primary} onChange={(v) => setBrandField("primary", v)} />
                 <ColorPick label="Accent" value={brand.accent} onChange={(v) => setBrandField("accent", v)} />
               </div>
+            </div>
+          </div>
+
+          <div className="field">
+            <label>Theme (one click)</label>
+            <div className="themes">
+              {THEMES.map((t) => (
+                <button key={t.name} className="theme-swatch" title={t.name} onClick={() => applyTheme(t)}>
+                  <span style={{ background: t.bg }} />
+                  <span style={{ background: t.accent }} />
+                  <span style={{ background: t.primary }} />
+                  <em>{t.name}</em>
+                </button>
+              ))}
             </div>
           </div>
 

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Player } from "@remotion/player";
 import { CustomScene, Scene, SceneLayer } from "../../src/CustomScene";
 import { ASPECTS, AspectKey } from "../../src/studio/templateMeta";
+import { FONT_OPTIONS } from "../../src/fonts";
 import { downloadBlob, filenameFromResponse } from "../../src/studio/download";
 
 const FPS = 30;
@@ -23,9 +24,12 @@ const ANIMS = [
   { value: "rotateIn", label: "Rotate in" },
   { value: "none", label: "None" },
 ];
-const FONTS_OPTS = [
-  { value: "mukta", label: "Mukta (Nepali+EN)" },
-  { value: "poppins", label: "Poppins (EN)" },
+const FONTS_OPTS = FONT_OPTIONS;
+const OUTS = [
+  { value: "none", label: "None" },
+  { value: "fade", label: "Fade out" },
+  { value: "slideDown", label: "Slide down" },
+  { value: "zoomOut", label: "Zoom out" },
 ];
 const SCENE_KEY = "motionstudio.scene";
 
@@ -330,6 +334,10 @@ export default function EditorApp() {
               )}
 
               <Select label="Animation in" value={sel.animateIn ?? "pop"} opts={ANIMS} onChange={(v) => updateLayer(sel.id, { animateIn: v as any })} />
+              <Select label="Animation out" value={sel.animateOut ?? "none"} opts={OUTS} onChange={(v) => updateLayer(sel.id, { animateOut: v as any })} />
+              <div className="field">
+                <label className="check"><input type="checkbox" checked={!!sel.shadow} onChange={(e) => updateLayer(sel.id, { shadow: e.target.checked })} /> Shadow / glow</label>
+              </div>
               <Slider label="Rotation°" value={sel.rotation ?? 0} min={-180} max={180} step={1} onChange={(v) => updateLayer(sel.id, { rotation: v })} />
               <Slider label="Start (sec)" value={sel.startSec ?? 0} min={0} max={duration} step={0.1} onChange={(v) => updateLayer(sel.id, { startSec: v })} />
               <Slider label="End (sec)" value={sel.endSec ?? duration} min={0} max={duration} step={0.1} onChange={(v) => updateLayer(sel.id, { endSec: v })} />

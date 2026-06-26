@@ -592,3 +592,37 @@ textarea.control {
   font-size: 12px;
   color: var(--muted);
 }
+
+.themes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.theme-swatch {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-items: center;
+  justify-content: center;
+}
+.theme-swatch:hover {
+  border-color: var(--orange);
+}
+.theme-swatch span {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.theme-swatch em {
+  width: 100%;
+  text-align: center;
+  font-style: normal;
+  font-size: 10.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
