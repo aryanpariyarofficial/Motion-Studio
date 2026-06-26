@@ -142,6 +142,12 @@ export const TEMPLATES: TemplateMeta[] = [
     compositionId: "Captions",
     controls: [
       { key: "text", label: "Caption text", type: "textarea", placeholder: "यो प्रोडक्ट साँच्चै राम्रो छ" },
+      { key: "captionStyle", label: "Caption style", type: "select", options: [
+        { value: "highlight", label: "Highlight (active word colored)" },
+        { value: "box", label: "Box (highlighted box behind word)" },
+        { value: "dynamic", label: "Dynamic AI (varying sizes)" },
+        { value: "karaoke", label: "Karaoke (fill left→right)" },
+      ] },
       { key: "textColor", label: "Text color", type: "color" },
       { key: "transparentBackground", label: "Transparent background", type: "checkbox" },
       { key: "bgColor", label: "Background color (if not transparent)", type: "color" },
@@ -155,6 +161,7 @@ export const TEMPLATES: TemplateMeta[] = [
     ],
     defaultProps: {
       text: "यो प्रोडक्ट साँच्चै राम्रो छ",
+      captionStyle: "dynamic",
       textColor: "#FFFFFF",
       transparentBackground: true,
       bgColor: "#101826",

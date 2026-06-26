@@ -14,6 +14,7 @@ import {
   TEMPLATES,
 } from "../src/studio/templateMeta";
 import { extractBrandColors } from "../src/studio/extractColors";
+import { downloadBlob, filenameFromResponse } from "../src/studio/download";
 
 type PropsMap = Record<string, Record<string, unknown>>;
 type Kit = Brand & { id: string };
@@ -144,7 +145,7 @@ export default function StudioApp() {
     reader.readAsDataURL(f);
   }
 
-  async function renderOne(aspectKey: AspectKey, format: "mp4" | "mov") {
+  async function renderOne(aspectKey: AspectKey, format: "mp4" | "mov" | "webm") {
     const c = buildComposition(templateId, props, aspectKey, brand);
     const res = await fetch("/api/render", {
       method: "POST",
@@ -158,19 +159,24 @@ export default function StudioApp() {
         durationInFrames: c.durationInFrames,
       }),
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Render failed");
-    return data.file as string;
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({}));
+      throw new Error(e.error || `HTTP ${res.status}`);
+    }
+    const blob = await res.blob();
+    const name = filenameFromResponse(res, `${templateId}-${aspectKey}.${format}`);
+    downloadBlob(blob, name);
+    return name;
   }
 
-  async function exportVideo(format: "mp4" | "mov") {
+  async function exportVideo(format: "mp4" | "mov" | "webm") {
     setBusy(true);
     setProgress({ label: ASPECTS[aspect].label, step: 1, total: 1 });
     setStatus({ kind: "info", msg: "Rendering… first export bundles the project (~20s), then it's fast." });
     try {
-      const file = await renderOne(aspect, format);
-      setStatus({ kind: "ok", msg: `✅ Saved to out/` });
-      setRecent((r) => [file, ...r].slice(0, 8));
+      const name = await renderOne(aspect, format);
+      setStatus({ kind: "ok", msg: `⬇ Downloaded ${name}` });
+      setRecent((r) => [name, ...r].slice(0, 8));
     } catch (e: any) {
       setStatus({ kind: "err", msg: `❌ ${e.message}` });
     } finally {
@@ -179,18 +185,19 @@ export default function StudioApp() {
     }
   }
 
-  async function exportAll(format: "mp4" | "mov") {
+  async function exportAll(format: "mp4" | "mov" | "webm") {
     const order: AspectKey[] = ["vertical", "square", "horizontal"];
     setBusy(true);
     setStatus({ kind: "info", msg: "Rendering all sizes…" });
-    const files: string[] = [];
+    const names: string[] = [];
     try {
       for (let i = 0; i < order.length; i++) {
         setProgress({ label: ASPECTS[order[i]].label, step: i + 1, total: order.length });
-        files.push(await renderOne(order[i], format));
+        names.push(await renderOne(order[i], format));
+        await new Promise((r) => setTimeout(r, 400)); // let each download start
       }
-      setStatus({ kind: "ok", msg: `✅ Exported ${files.length} sizes to out/` });
-      setRecent((r) => [...files.reverse(), ...r].slice(0, 8));
+      setStatus({ kind: "ok", msg: `⬇ Downloaded ${names.length} sizes` });
+      setRecent((r) => [...names, ...r].slice(0, 8));
     } catch (e: any) {
       setStatus({ kind: "err", msg: `❌ ${e.message}` });
     } finally {
@@ -330,13 +337,16 @@ export default function StudioApp() {
               {busy ? "Rendering…" : `Export MP4 · ${ASPECTS[aspect].label}`}
             </button>
             <button className="btn secondary" disabled={busy} onClick={() => exportVideo("mov")}>
-              Export transparent .MOV
+              Transparent .MOV (CapCut)
+            </button>
+            <button className="btn secondary" disabled={busy} onClick={() => exportVideo("webm")}>
+              Transparent .WebM (plays anywhere)
             </button>
             <button className="btn batch" disabled={busy} onClick={() => exportAll("mp4")}>
               ⚡ Export all sizes (9:16 · 1:1 · 16:9)
             </button>
           </div>
-          <p className="hint">MP4 = solid background · MOV = transparent overlay for CapCut.</p>
+          <p className="hint">Files download to your browser's Downloads folder. MP4 = solid background · MOV/WebM = transparent overlay.</p>
 
           {progress && (
             <div className="prog-wrap">
@@ -368,7 +378,7 @@ export default function StudioApp() {
             <li>Each client = its own <b>Brand Kit</b> (use ＋ to add one). Colors are auto-picked from the logo.</li>
             <li>Use <b>Font size</b> if text gets close to the edges.</li>
             <li><b>⚡ Export all sizes</b> renders 9:16, 1:1 and 16:9 in one go.</li>
-            <li>Exports save to the <code>out/</code> folder — drag them into CapCut.</li>
+            <li>Exports <b>download straight to your browser's Downloads</b> folder — drag them into CapCut.</li>
           </ul>
         </aside>
       </div>

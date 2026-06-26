@@ -122,6 +122,7 @@ export const RemotionRoot: React.FC = () => {
         height={1920}
         defaultProps={{
           text: "यो प्रोडक्ट साँच्चै राम्रो छ",
+          captionStyle: "dynamic",
           textColor: "#FFFFFF",
           accentColor: "#E8491F",
           bgColor: "transparent",

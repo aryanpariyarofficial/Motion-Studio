@@ -1,26 +1,42 @@
 import React from "react";
-import { AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Audio, Img, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { FONTS } from "./fonts";
+
+export type LayerAnim =
+  | "none"
+  | "fade"
+  | "pop"
+  | "slideUp"
+  | "slideDown"
+  | "slideLeft"
+  | "slideRight"
+  | "blurIn"
+  | "zoomIn"
+  | "rotateIn";
 
 export type SceneLayer = {
   id: string;
   type: "text" | "image";
   text?: string;
   src?: string | null;
-  xPct: number; // center X, 0..100
-  yPct: number; // center Y, 0..100
-  sizePct: number; // text: % of min(w,h) font size · image: % of width
+  xPct: number;
+  yPct: number;
+  sizePct: number;
+  rotation?: number; // degrees
   color?: string;
   fontKey?: keyof typeof FONTS;
   fontWeight?: number;
   align?: "left" | "center" | "right";
-  animateIn?: "none" | "fade" | "slideUp" | "pop";
-  delay?: number; // frames
+  animateIn?: LayerAnim;
+  startSec?: number; // when the layer appears
+  endSec?: number; // when it disappears (default: end of scene)
 };
 
 export type Scene = {
-  background: string; // hex or "transparent"
+  background: string;
   layers: SceneLayer[];
+  audioSrc?: string | null;
+  audioVolume?: number;
 };
 
 export type CustomSceneProps = { scene: Scene };
@@ -32,29 +48,41 @@ export const CustomScene: React.FC<CustomSceneProps> = ({ scene }) => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: scene.background === "transparent" ? "transparent" : scene.background, overflow: "hidden" }}>
+      {scene.audioSrc ? <Audio src={scene.audioSrc} volume={scene.audioVolume ?? 1} /> : null}
+
       {scene.layers.map((l) => {
-        const local = frame - (l.delay ?? 0);
+        const startFrame = Math.round((l.startSec ?? 0) * fps);
+        const endFrame = l.endSec != null ? Math.round(l.endSec * fps) : Infinity;
+        if (frame < startFrame || frame > endFrame) return null;
+        const local = frame - startFrame;
+
         let opacity = 1;
+        let tx = 0;
         let ty = 0;
         let scale = 1;
-        if (l.animateIn === "fade") {
-          opacity = interpolate(local, [0, 12], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-        } else if (l.animateIn === "slideUp") {
-          const s = spring({ frame: local, fps, config: { damping: 200 } });
-          opacity = interpolate(local, [0, 10], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-          ty = interpolate(s, [0, 1], [base * 0.06, 0]);
-        } else if (l.animateIn === "pop") {
-          const s = spring({ frame: local, fps, config: { damping: 11, mass: 0.6, stiffness: 160 } });
-          opacity = interpolate(local, [0, 8], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-          scale = Math.max(0, s);
-        }
+        let rot = l.rotation ?? 0;
+        let blur = 0;
+        const anim = l.animateIn ?? "pop";
+        const fadeIn = interpolate(local, [0, 10], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+        const sp = spring({ frame: local, fps, config: { damping: 14, mass: 0.7 } });
+
+        if (anim === "fade") opacity = fadeIn;
+        else if (anim === "pop") { opacity = interpolate(local, [0, 8], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }); scale = Math.max(0, spring({ frame: local, fps, config: { damping: 11, mass: 0.6, stiffness: 160 } })); }
+        else if (anim === "slideUp") { opacity = fadeIn; ty = interpolate(sp, [0, 1], [base * 0.08, 0]); }
+        else if (anim === "slideDown") { opacity = fadeIn; ty = interpolate(sp, [0, 1], [-base * 0.08, 0]); }
+        else if (anim === "slideLeft") { opacity = fadeIn; tx = interpolate(sp, [0, 1], [base * 0.12, 0]); }
+        else if (anim === "slideRight") { opacity = fadeIn; tx = interpolate(sp, [0, 1], [-base * 0.12, 0]); }
+        else if (anim === "blurIn") { opacity = fadeIn; blur = interpolate(local, [0, 14], [16, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }); }
+        else if (anim === "zoomIn") { opacity = fadeIn; scale = interpolate(sp, [0, 1], [1.5, 1]); }
+        else if (anim === "rotateIn") { opacity = fadeIn; scale = interpolate(sp, [0, 1], [0.6, 1]); rot += interpolate(sp, [0, 1], [-18, 0]); }
 
         const common: React.CSSProperties = {
           position: "absolute",
           left: `${l.xPct}%`,
           top: `${l.yPct}%`,
-          transform: `translate(-50%, -50%) translateY(${ty}px) scale(${scale})`,
+          transform: `translate(-50%, -50%) translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(${scale})`,
           opacity,
+          filter: blur ? `blur(${blur}px)` : undefined,
         };
 
         if (l.type === "image" && l.src) {

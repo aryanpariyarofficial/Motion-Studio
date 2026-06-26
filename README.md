@@ -18,12 +18,12 @@ Built with **[Remotion](https://www.remotion.dev/)** + **[Next.js](https://nextj
 - 👥 **Multiple brand kits** — save a separate kit per client and switch between them instantly.
 - ✍️ **Bilingual text** — Devanagari (Nepali) renders correctly via **Mukta**; Latin via **Poppins**. Mixed Nepali + English lines just work.
 - 🧩 **7 templates** — Hook Title · Logo + Contact Card · Text Animation (7 styles) · UGC Captions · CTA/Offer Card · Lower Third · Review/Stars Card.
-- ✏️ **Custom editor** — build your own free-form, layer-based designs (text + image layers, drag to position, per-layer animation).
+- ✏️ **Custom editor** — free-form, layer-based designs: text + image layers, drag to position, **10 animations**, rotation, a per-layer **timeline** (start/end), and **background music**.
 - 📐 **Aspect ratios** — Vertical 9:16, Horizontal 16:9, Square 1:1 — responsive layouts that **auto-fit** the text.
 - ⚡ **Batch export** — render all three aspect ratios (9:16 · 1:1 · 16:9) in one click.
 - 🔤 **Per-template controls** — background color, text color, font size, font weight, duration.
 - 👁️ **Live preview** — instant playback via the Remotion Player, fit to your screen.
-- ⬇️ **Local export** — MP4 (with background) or transparent `.MOV` (ProRes 4444 overlay), with a render progress bar.
+- ⬇️ **Instant download** — exports save straight to your browser's Downloads folder: **MP4** (solid bg), transparent **.MOV** (ProRes, for CapCut) or transparent **.WebM** (plays anywhere).
 
 ---
 
@@ -60,8 +60,11 @@ Open **http://localhost:3333** in your browser.
 4. **Fill in the fields** — your text (Nepali / English / mixed), colors, **font size**, font weight, and duration. The preview updates instantly.
 5. **Export (right panel):**
    - **Export MP4** → solid background — perfect as an intro/outro or full title card.
-   - **Export transparent .MOV** → see-through overlay — drop it *on top* of your footage in CapCut.
-6. Your file is saved to the **`out/`** folder. Drag it onto your CapCut timeline. Done. ✅
+   - **Transparent .MOV** → see-through overlay for CapCut/Premiere (ProRes 4444).
+   - **Transparent .WebM** → see-through overlay that also plays in browsers/VLC.
+6. The file **downloads straight to your browser's Downloads folder**. Drag it onto your CapCut timeline. Done. ✅
+
+> ℹ️ **Transparent file won't preview in Windows' default player?** That's expected — Windows Media Player can't decode ProRes/alpha video. Use the **.WebM** export (plays in Chrome/VLC) to check it, or just drop the `.MOV` straight into CapCut where it works fine.
 
 ---
 
@@ -72,7 +75,7 @@ Open **http://localhost:3333** in your browser.
 | **Hook Title Card** | Bold branded tagline with particle field, brand kicker and underline. Great opener/hook. |
 | **Logo + Contact Card** | Animated logo build + contact rows (location / email / phone). Intro or outro. |
 | **Text Animation** | Generic engine with 7 styles: Kinetic Scale, Word Pop, Fade + Slide Up, Letter Cascade, Typewriter, Glitch, Neon Glow. |
-| **UGC Captions** | Word-by-word build-up with the active word highlighted — the staple of UGC ads. |
+| **UGC Captions** | Word-by-word captions in 4 styles: Highlight · Box (Hormozi) · **Dynamic AI** (varying sizes/emphasis) · Karaoke. |
 | **CTA / Offer Card** | Big offer headline + subtitle + call-to-action button + starburst. |
 | **Lower Third** | Transparent name/role tag that slides in near the bottom. |
 | **Review / Stars Card** | Animated star rating with a customer quote and name. |
