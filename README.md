@@ -14,13 +14,15 @@ Built with **[Remotion](https://www.remotion.dev/)** + **[Next.js](https://nextj
 
 ## ✨ Features
 
-- 🎨 **Brand Kit** — upload a logo, set primary/accent brand colors and brand name once; it applies to every template (saved in your browser).
+- 🎨 **Brand Kit** — upload a logo and **brand colors are auto-picked from it**; set brand name once and it applies to every template.
+- 👥 **Multiple brand kits** — save a separate kit per client and switch between them instantly.
 - ✍️ **Bilingual text** — Devanagari (Nepali) renders correctly via **Mukta**; Latin via **Poppins**. Mixed Nepali + English lines just work.
 - 🧩 **Templates** — Hook Title Card · Logo + Contact Card · generic Text Animation (7 styles).
 - 📐 **Aspect ratios** — Vertical 9:16, Horizontal 16:9, Square 1:1 — responsive layouts that **auto-fit** the text.
+- ⚡ **Batch export** — render all three aspect ratios (9:16 · 1:1 · 16:9) in one click.
 - 🔤 **Per-template controls** — background color, text color, font size, font weight, duration.
 - 👁️ **Live preview** — instant playback via the Remotion Player, fit to your screen.
-- ⬇️ **Local export** — MP4 (with background) or transparent `.MOV` (ProRes 4444 overlay).
+- ⬇️ **Local export** — MP4 (with background) or transparent `.MOV` (ProRes 4444 overlay), with a render progress bar.
 
 ---
 
@@ -51,7 +53,7 @@ Open **http://localhost:3333** in your browser.
 
 ## 🧑‍🎨 How to use
 
-1. **Set up your Brand Kit (left panel)** — type your brand name, click **Upload logo** (PNG with transparency is best), and pick your **Primary** and **Accent** colors. These apply to every template and are remembered next time.
+1. **Set up your Brand Kit (left panel)** — click **Upload logo** (PNG with transparency is best) and your brand colors are picked automatically (tweak them anytime). Use ＋ to add a separate kit for each client and switch between them from the dropdown. Everything is remembered next time.
 2. **Pick a template** from the dropdown.
 3. **Choose an aspect ratio** (top-right): Vertical 9:16, Horizontal 16:9, or Square 1:1.
 4. **Fill in the fields** — your text (Nepali / English / mixed), colors, **font size**, font weight, and duration. The preview updates instantly.
@@ -106,11 +108,13 @@ It then appears in the studio automatically.
 
 ## 🗺 Roadmap
 
+See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the full plan. Highlights:
+
 - UGC word-by-word captions (paste a script → timed captions)
-- Save multiple brand kits (one per client)
+- More templates: CTA / price cards, lower-thirds, review cards
 - Logo background removal
-- More templates: CTA / price cards, lower-thirds
-- Custom-template editor (free-form layouts)
+- Sound / music baked into exports
+- Custom-template editor (free-form, layer-based layouts)
 
 ---
 

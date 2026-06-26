@@ -371,6 +371,68 @@ textarea.control {
   font-size: 12px;
   font-weight: 600;
 }
+.btn.batch {
+  background: linear-gradient(90deg, var(--teal), var(--orange));
+}
+
+.kit-toolbar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.kit-toolbar .control {
+  flex: 1;
+  min-width: 0;
+}
+.icon-btn {
+  width: 34px;
+  flex-shrink: 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  font-size: 14px;
+}
+.icon-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.prog-wrap {
+  margin-top: 12px;
+}
+.prog {
+  height: 8px;
+  background: var(--panel-2);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+.prog > i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal), var(--orange));
+  border-radius: 999px;
+  transition: width 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.prog > i::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  animation: shimmer 1.1s linear infinite;
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.prog-label {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 6px;
+}
 
 .colorpick {
   flex: 1;

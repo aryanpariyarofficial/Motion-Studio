@@ -13,50 +13,92 @@ import {
   getTemplate,
   TEMPLATES,
 } from "../src/studio/templateMeta";
+import { extractBrandColors } from "../src/studio/extractColors";
 
 type PropsMap = Record<string, Record<string, unknown>>;
+type Kit = Brand & { id: string };
 
 const initialProps: PropsMap = Object.fromEntries(
   TEMPLATES.map((t) => [t.id, { ...t.defaultProps }]),
 );
 
-const BRAND_KEY = "motionstudio.brand";
+const KITS_KEY = "motionstudio.kits";
+const ACTIVE_KEY = "motionstudio.activeKit";
+const LEGACY_KEY = "motionstudio.brand";
+
+const newId = () =>
+  (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()));
 
 export default function StudioApp() {
   const [templateId, setTemplateId] = useState(TEMPLATES[0].id);
   const [aspect, setAspect] = useState<AspectKey>("horizontal");
   const [allProps, setAllProps] = useState<PropsMap>(initialProps);
-  const [brand, setBrand] = useState<Brand>(DEFAULT_BRAND);
+  const [kits, setKits] = useState<Kit[]>([{ ...DEFAULT_BRAND, id: "default" }]);
+  const [activeId, setActiveId] = useState("default");
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<{ kind: "ok" | "err" | "info"; msg: string } | null>(null);
+  const [progress, setProgress] = useState<{ label: string; step: number; total: number } | null>(null);
   const [recent, setRecent] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
   const playerRef = useRef<any>(null);
 
-  // expose the player for screenshot tooling (harmless in normal use)
   useEffect(() => {
     if (typeof window !== "undefined") (window as any).__player = playerRef.current;
   });
 
+  // load kits (or migrate a legacy single brand)
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(BRAND_KEY);
-      if (saved) setBrand({ ...DEFAULT_BRAND, ...JSON.parse(saved) });
+      const savedKits = localStorage.getItem(KITS_KEY);
+      if (savedKits) {
+        const parsed: Kit[] = JSON.parse(savedKits);
+        if (parsed.length) {
+          setKits(parsed);
+          const act = localStorage.getItem(ACTIVE_KEY);
+          setActiveId(act && parsed.some((k) => k.id === act) ? act : parsed[0].id);
+          return;
+        }
+      }
+      const legacy = localStorage.getItem(LEGACY_KEY);
+      if (legacy) {
+        const b = { ...DEFAULT_BRAND, ...JSON.parse(legacy), id: "default" } as Kit;
+        setKits([b]);
+        setActiveId(b.id);
+      }
     } catch {}
   }, []);
   useEffect(() => {
     try {
-      localStorage.setItem(BRAND_KEY, JSON.stringify(brand));
+      localStorage.setItem(KITS_KEY, JSON.stringify(kits));
+      localStorage.setItem(ACTIVE_KEY, activeId);
     } catch {}
-  }, [brand]);
+  }, [kits, activeId]);
 
   const meta = getTemplate(templateId)!;
   const props = allProps[templateId];
+  const brand = kits.find((k) => k.id === activeId) ?? kits[0];
 
   const setProp = (key: string, value: unknown) =>
     setAllProps((prev) => ({ ...prev, [templateId]: { ...prev[templateId], [key]: value } }));
   const setBrandField = (key: keyof Brand, value: unknown) =>
-    setBrand((b) => ({ ...b, [key]: value }));
+    setKits((ks) => ks.map((k) => (k.id === activeId ? { ...k, [key]: value } : k)));
+
+  const addKit = () => {
+    const k: Kit = { ...DEFAULT_BRAND, name: "New Brand", id: newId() };
+    setKits((ks) => [...ks, k]);
+    setActiveId(k.id);
+  };
+  const duplicateKit = () => {
+    const k: Kit = { ...brand, name: `${brand.name} copy`, id: newId() };
+    setKits((ks) => [...ks, k]);
+    setActiveId(k.id);
+  };
+  const deleteKit = () => {
+    if (kits.length <= 1) return;
+    const remaining = kits.filter((k) => k.id !== activeId);
+    setKits(remaining);
+    setActiveId(remaining[0].id);
+  };
 
   const comp = useMemo(
     () => buildComposition(templateId, props, aspect, brand),
@@ -64,7 +106,7 @@ export default function StudioApp() {
   );
   const Component = COMPONENTS[meta.compositionId];
 
-  // fit the preview inside the available stage area (no page scrolling)
+  // fit preview to the stage
   const stageRef = useRef<HTMLDivElement>(null);
   const [fit, setFit] = useState({ w: 0, h: 0 });
   useLayoutEffect(() => {
@@ -84,44 +126,81 @@ export default function StudioApp() {
     return () => ro.disconnect();
   }, [comp.width, comp.height]);
 
-  function onLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  async function onLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
     if (!f) return;
     const reader = new FileReader();
-    reader.onload = () => setBrandField("logoSrc", reader.result as string);
+    reader.onload = async () => {
+      const dataUrl = reader.result as string;
+      setBrandField("logoSrc", dataUrl);
+      const picked = await extractBrandColors(dataUrl);
+      if (picked) {
+        setKits((ks) =>
+          ks.map((k) => (k.id === activeId ? { ...k, logoSrc: dataUrl, primary: picked.primary, accent: picked.accent } : k)),
+        );
+        setStatus({ kind: "ok", msg: "🎨 Brand colors picked from your logo (tweak them if needed)." });
+      }
+    };
     reader.readAsDataURL(f);
+  }
+
+  async function renderOne(aspectKey: AspectKey, format: "mp4" | "mov") {
+    const c = buildComposition(templateId, props, aspectKey, brand);
+    const res = await fetch("/api/render", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        templateId,
+        inputProps: c.inputProps,
+        format,
+        width: c.width,
+        height: c.height,
+        durationInFrames: c.durationInFrames,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Render failed");
+    return data.file as string;
   }
 
   async function exportVideo(format: "mp4" | "mov") {
     setBusy(true);
-    setStatus({ kind: "info", msg: "Rendering… first export bundles the project (~20s), later ones are fast." });
+    setProgress({ label: ASPECTS[aspect].label, step: 1, total: 1 });
+    setStatus({ kind: "info", msg: "Rendering… first export bundles the project (~20s), then it's fast." });
     try {
-      const res = await fetch("/api/render", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          templateId,
-          inputProps: comp.inputProps,
-          format,
-          width: comp.width,
-          height: comp.height,
-          durationInFrames: comp.durationInFrames,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Render failed");
+      const file = await renderOne(aspect, format);
       setStatus({ kind: "ok", msg: `✅ Saved to out/` });
-      setRecent((r) => [data.file, ...r].slice(0, 6));
+      setRecent((r) => [file, ...r].slice(0, 8));
     } catch (e: any) {
       setStatus({ kind: "err", msg: `❌ ${e.message}` });
     } finally {
       setBusy(false);
+      setProgress(null);
+    }
+  }
+
+  async function exportAll(format: "mp4" | "mov") {
+    const order: AspectKey[] = ["vertical", "square", "horizontal"];
+    setBusy(true);
+    setStatus({ kind: "info", msg: "Rendering all sizes…" });
+    const files: string[] = [];
+    try {
+      for (let i = 0; i < order.length; i++) {
+        setProgress({ label: ASPECTS[order[i]].label, step: i + 1, total: order.length });
+        files.push(await renderOne(order[i], format));
+      }
+      setStatus({ kind: "ok", msg: `✅ Exported ${files.length} sizes to out/` });
+      setRecent((r) => [...files.reverse(), ...r].slice(0, 8));
+    } catch (e: any) {
+      setStatus({ kind: "err", msg: `❌ ${e.message}` });
+    } finally {
+      setBusy(false);
+      setProgress(null);
     }
   }
 
   return (
     <div className="app">
-      {/* ---------------- TOP BAR ---------------- */}
       <header className="topbar">
         <div className="topbar-left">
           <h1 className="brand">
@@ -142,10 +221,24 @@ export default function StudioApp() {
       </header>
 
       <div className="body">
-        {/* ---------------- LEFT SIDEBAR ---------------- */}
+        {/* LEFT SIDEBAR */}
         <aside className="sidebar">
           <div className="kit">
             <div className="kit-title">🎨 Brand Kit</div>
+
+            <div className="kit-toolbar">
+              <select className="control" value={activeId} onChange={(e) => setActiveId(e.target.value)}>
+                {kits.map((k) => (
+                  <option key={k.id} value={k.id}>
+                    {k.name || "Untitled"}
+                  </option>
+                ))}
+              </select>
+              <button className="icon-btn" title="New brand" onClick={addKit}>＋</button>
+              <button className="icon-btn" title="Duplicate" onClick={duplicateKit}>⧉</button>
+              <button className="icon-btn" title="Delete" onClick={deleteKit} disabled={kits.length <= 1}>🗑</button>
+            </div>
+
             <div className="field">
               <label>Brand name</label>
               <input className="control" value={brand.name} onChange={(e) => setBrandField("name", e.target.value)} />
@@ -173,7 +266,7 @@ export default function StudioApp() {
                 </div>
                 <input ref={fileRef} type="file" accept="image/*" hidden onChange={onLogoUpload} />
               </div>
-              <p className="hint">PNG with transparency works best. Shows in the Logo + Contact Card.</p>
+              <p className="hint">Upload a logo and brand colors are picked automatically.</p>
             </div>
             <div className="field" style={{ marginBottom: 4 }}>
               <label>Brand colors</label>
@@ -186,14 +279,7 @@ export default function StudioApp() {
 
           <div className="field">
             <label>Template</label>
-            <select
-              className="control"
-              value={templateId}
-              onChange={(e) => {
-                setTemplateId(e.target.value);
-                setStatus(null);
-              }}
-            >
+            <select className="control" value={templateId} onChange={(e) => { setTemplateId(e.target.value); setStatus(null); }}>
               {TEMPLATES.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.label}
@@ -210,7 +296,7 @@ export default function StudioApp() {
           ))}
         </aside>
 
-        {/* ---------------- CENTER STAGE ---------------- */}
+        {/* CENTER STAGE */}
         <main className="stage" ref={stageRef}>
           <div className="player-wrap" style={{ width: fit.w || undefined, height: fit.h || undefined }}>
             {fit.w > 0 && (
@@ -235,18 +321,32 @@ export default function StudioApp() {
           </div>
         </main>
 
-        {/* ---------------- RIGHT RAIL ---------------- */}
+        {/* RIGHT RAIL */}
         <aside className="rail">
           <div className="rail-title">⬇ Export</div>
           <div className="export-btns">
             <button className="btn" disabled={busy} onClick={() => exportVideo("mp4")}>
-              {busy ? "Rendering…" : "Export MP4"}
+              {busy ? "Rendering…" : `Export MP4 · ${ASPECTS[aspect].label}`}
             </button>
             <button className="btn secondary" disabled={busy} onClick={() => exportVideo("mov")}>
               Export transparent .MOV
             </button>
+            <button className="btn batch" disabled={busy} onClick={() => exportAll("mp4")}>
+              ⚡ Export all sizes (9:16 · 1:1 · 16:9)
+            </button>
           </div>
           <p className="hint">MP4 = solid background · MOV = transparent overlay for CapCut.</p>
+
+          {progress && (
+            <div className="prog-wrap">
+              <div className="prog">
+                <i style={{ width: `${(progress.step / progress.total) * 100}%` }} />
+              </div>
+              <div className="prog-label">
+                Rendering {progress.label} — {progress.step} of {progress.total}
+              </div>
+            </div>
+          )}
           {status && <div className={`status ${status.kind === "info" ? "" : status.kind}`}>{status.msg}</div>}
 
           {recent.length > 0 && (
@@ -255,9 +355,7 @@ export default function StudioApp() {
               <div className="rail-title">🗂 Recent renders</div>
               <ul className="recent">
                 {recent.map((f, i) => (
-                  <li key={i} title={f}>
-                    {f.split(/[\\/]/).pop()}
-                  </li>
+                  <li key={i} title={f}>{f.split(/[\\/]/).pop()}</li>
                 ))}
               </ul>
             </>
@@ -266,9 +364,9 @@ export default function StudioApp() {
           <div className="divider" />
           <div className="rail-title">💡 Tips</div>
           <ul className="tips">
-            <li>Set your logo + brand colors once in the Brand Kit — they apply to every template.</li>
+            <li>Each client = its own <b>Brand Kit</b> (use ＋ to add one). Colors are auto-picked from the logo.</li>
             <li>Use <b>Font size</b> if text gets close to the edges.</li>
-            <li>Switch <b>Aspect</b> (top-right) to make 9:16, 16:9 or 1:1 versions of the same clip.</li>
+            <li><b>⚡ Export all sizes</b> renders 9:16, 1:1 and 16:9 in one go.</li>
             <li>Exports save to the <code>out/</code> folder — drag them into CapCut.</li>
           </ul>
         </aside>
