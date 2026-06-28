@@ -102,6 +102,30 @@ export const MotionTypography: React.FC<MotionTypographyProps> = ({
   const frame = useCurrentFrame();
   const { fps, width, height, durationInFrames } = useVideoConfig();
 
+  // ---- all hooks must run every render (never conditionally) ----
+  const blockRef = useRef<HTMLDivElement>(null);
+  const [m, setM] = useState<{ bw: number; bh: number; rects: { cx: number; cy: number; w: number; h: number }[] } | null>(null);
+  const [handle] = useState(() => delayRender("mt-measure"));
+  const measure = () => {
+    const b = blockRef.current;
+    if (!b) return;
+    const rects: { cx: number; cy: number; w: number; h: number }[] = [];
+    b.querySelectorAll<HTMLElement>("[data-i]").forEach((el) => {
+      const idx = +el.getAttribute("data-i")!;
+      rects[idx] = { cx: el.offsetLeft + el.offsetWidth / 2, cy: el.offsetTop + el.offsetHeight / 2, w: el.offsetWidth, h: el.offsetHeight };
+    });
+    setM({ bw: b.offsetWidth, bh: b.offsetHeight, rects });
+  };
+  useLayoutEffect(() => {
+    measure();
+    continueRender(handle);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useLayoutEffect(() => {
+    measure();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [segments, autoDesign, mode, width, height, fontKey, fontWeight, accentStyle]);
+
   const segs = buildSegs(segments, inkColor, emphasisColor, emphasisColor2, autoDesign);
   const fontFamily = FONTS[fontKey] ?? FONTS.poppins;
   const isDisplay = fontKey === "anton" || fontKey === "bebas" || fontKey === "bangers";
@@ -134,23 +158,6 @@ export const MotionTypography: React.FC<MotionTypographyProps> = ({
   }
 
   // ---------------- REVEAL MODE (multi-stop camera) ----------------
-  const blockRef = useRef<HTMLDivElement>(null);
-  const [m, setM] = useState<{ bw: number; bh: number; rects: { cx: number; cy: number; w: number; h: number }[] } | null>(null);
-  const [handle] = useState(() => delayRender("mt-measure"));
-  useLayoutEffect(() => {
-    const b = blockRef.current;
-    if (b) {
-      const rects: { cx: number; cy: number; w: number; h: number }[] = [];
-      b.querySelectorAll<HTMLElement>("[data-i]").forEach((el) => {
-        const idx = +el.getAttribute("data-i")!;
-        rects[idx] = { cx: el.offsetLeft + el.offsetWidth / 2, cy: el.offsetTop + el.offsetHeight / 2, w: el.offsetWidth, h: el.offsetHeight };
-      });
-      setM({ bw: b.offsetWidth, bh: b.offsetHeight, rects });
-    }
-    continueRender(handle);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const block = (
     <div ref={blockRef} style={{ position: "relative", width: DESIGN_W, textAlign: "center", lineHeight: 0.95 }}>
       {segs.map((s, i) => {
