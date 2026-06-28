@@ -7,6 +7,7 @@ import { OfferCard } from "../OfferCard";
 import { LowerThird } from "../LowerThird";
 import { ReviewCard } from "../ReviewCard";
 import { TypingList } from "../TypingList";
+import { MotionTypography } from "../MotionTypography";
 
 // Maps the compositionId (from templateMeta) to the React component for live preview.
 export const COMPONENTS: Record<string, React.FC<any>> = {
@@ -18,4 +19,5 @@ export const COMPONENTS: Record<string, React.FC<any>> = {
   LowerThird,
   ReviewCard,
   TypingList,
+  MotionTypography,
 };

@@ -9,6 +9,7 @@ import { LowerThird } from "./LowerThird";
 import { ReviewCard } from "./ReviewCard";
 import { CustomScene } from "./CustomScene";
 import { TypingList } from "./TypingList";
+import { MotionTypography } from "./MotionTypography";
 
 const DIMS: Record<TextAnimationProps["orientation"], [number, number]> = {
   vertical: [1080, 1920],
@@ -227,6 +228,26 @@ export const RemotionRoot: React.FC = () => {
           fontScale: 1,
           fontWeight: 700,
           durationInSeconds: 5,
+        }}
+      />
+
+      {/* kinetic motion typography */}
+      <Composition
+        id="MotionTypography"
+        component={MotionTypography}
+        calculateMetadata={durMeta(8)}
+        fps={FPS}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          segments: "DESIGN\nin motion | 4\nTYPOGRAPHY | 16 | accent\nthat moves | 3.5 | | italic\nBOLD\nLOUD | 13 | accent\n& fast | 4\nEDITORIAL | 11",
+          fontKey: "anton",
+          secondsPerLoop: 12,
+          bgColor: "#F5D31B",
+          inkColor: "#111111",
+          emphasisColor: "#6B5EE4",
+          fontWeight: 800,
+          durationInSeconds: 8,
         }}
       />
 

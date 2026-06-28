@@ -338,6 +338,32 @@ export const TEMPLATES: TemplateMeta[] = [
       durationInSeconds: 5,
     },
   },
+  {
+    id: "motionTypography",
+    label: "Motion Typography",
+    description: "Loud editorial words scrolling up in a seamless loop with big/small size contrast.",
+    compositionId: "MotionTypography",
+    controls: [
+      { key: "segments", label: "Segments — one per line: TEXT | size | color | italic", type: "textarea", placeholder: "DESIGN\nin motion | 4\nTYPOGRAPHY | 16 | accent\nthat moves | 3.5 | | italic" },
+      { key: "fontKey", label: "Font", type: "select", options: FONT_SELECT },
+      { key: "secondsPerLoop", label: "Seconds per loop (speed)", type: "slider", min: 4, max: 30, step: 1 },
+      { key: "bgColor", label: "Background", type: "color" },
+      { key: "inkColor", label: "Text color", type: "color" },
+      { key: "emphasisColor", label: "Accent color", type: "color" },
+      { key: "fontWeight", label: "Font weight", type: "slider", min: 400, max: 900, step: 100 },
+      { key: "durationInSeconds", label: "Duration (sec)", type: "slider", min: 3, max: 30, step: 1 },
+    ],
+    defaultProps: {
+      segments: "DESIGN\nin motion | 4\nTYPOGRAPHY | 16 | accent\nthat moves | 3.5 | | italic\nBOLD\nLOUD | 13 | accent\n& fast | 4\nEDITORIAL | 11",
+      fontKey: "anton",
+      secondsPerLoop: 12,
+      bgColor: "#F5D31B",
+      inkColor: "#111111",
+      emphasisColor: "#6B5EE4",
+      fontWeight: 800,
+      durationInSeconds: 8,
+    },
+  },
 ];
 
 export const getTemplate = (id: string) => TEMPLATES.find((t) => t.id === id);
