@@ -241,14 +241,24 @@ export const RemotionRoot: React.FC = () => {
         height={1920}
         defaultProps={{
           mode: "reveal",
-          segments: "ever wanted | 10\nto | 3.5\nmake | 4 | accent\nvisually | 16 | accent\nbeautiful | 12 | | italic\nmotion | 7 | accent\ntypography? | 12 | | focus",
+          autoDesign: false,
+          segments: "ever wanted | 10\nto | 3.5\nmake | 4 | accent\nvisually | 16 | accent | focus\nbeautiful | 12 | | italic\nmotion | 7 | accent\ntypography? | 12 | | focus",
           fontKey: "anton",
-          secondsPerLoop: 12,
+          direction: "out",
+          motionPreset: "snappy",
+          secondsPerStop: 0.7,
+          tilt: 2,
+          exitType: "none",
+          accentStyle: "plain",
+          bgType: "solid",
           bgColor: "#F5D31B",
+          bgColor2: "#FF7A00",
           inkColor: "#111111",
           emphasisColor: "#6B5EE4",
+          emphasisColor2: "#E8491F",
+          secondsPerLoop: 12,
           fontWeight: 800,
-          durationInSeconds: 4,
+          durationInSeconds: 5,
         }}
       />
 
