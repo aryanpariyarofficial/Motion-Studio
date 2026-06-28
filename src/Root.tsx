@@ -240,14 +240,15 @@ export const RemotionRoot: React.FC = () => {
         width={1080}
         height={1920}
         defaultProps={{
-          segments: "DESIGN\nin motion | 4\nTYPOGRAPHY | 16 | accent\nthat moves | 3.5 | | italic\nBOLD\nLOUD | 13 | accent\n& fast | 4\nEDITORIAL | 11",
+          mode: "reveal",
+          segments: "ever wanted | 10\nto | 3.5\nmake | 4 | accent\nvisually | 16 | accent\nbeautiful | 12 | | italic\nmotion | 7 | accent\ntypography? | 12 | | focus",
           fontKey: "anton",
           secondsPerLoop: 12,
           bgColor: "#F5D31B",
           inkColor: "#111111",
           emphasisColor: "#6B5EE4",
           fontWeight: 800,
-          durationInSeconds: 8,
+          durationInSeconds: 4,
         }}
       />
 
