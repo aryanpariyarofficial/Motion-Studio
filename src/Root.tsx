@@ -86,6 +86,7 @@ export const RemotionRoot: React.FC = () => {
           primaryColor: "#0E3A33",
           accentColor: "#E8491F",
           textColor: "#0E3A33",
+          contactWidth: 24,
           fontScale: 1,
           fontWeight: 800,
         }}

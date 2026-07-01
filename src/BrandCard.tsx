@@ -24,6 +24,7 @@ export type BrandCardProps = {
   textColor?: string;
   fontScale?: number;
   fontWeight?: number;
+  contactWidth?: number; // max width of the contact text, in em (× font size)
 };
 
 const rampAfter = (frame: number, start: number, len: number) =>
@@ -147,7 +148,8 @@ const ContactRow: React.FC<{
   delay: number;
   fontSize: number;
   color: string;
-}> = ({ icon, children, delay, fontSize, color }) => {
+  maxW: number;
+}> = ({ icon, children, delay, fontSize, color, maxW }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const s = spring({ frame: frame - delay, fps, config: { damping: 18, mass: 0.7 } });
@@ -157,7 +159,7 @@ const ContactRow: React.FC<{
   return (
     <div style={{ display: "flex", alignItems: "center", gap: fontSize * 0.7, opacity, transform: `translateX(${x}px)` }}>
       <div style={{ flexShrink: 0, display: "flex", transform: `scale(${iconScale})` }}>{icon}</div>
-      <div style={{ fontFamily: poppins, fontWeight: 600, fontSize, color, lineHeight: 1.15, maxWidth: fontSize * 14, wordBreak: "break-word" }}>
+      <div style={{ fontFamily: poppins, fontWeight: 600, fontSize, color, lineHeight: 1.15, maxWidth: maxW, overflowWrap: "break-word", wordBreak: "break-word" }}>
         {children}
       </div>
     </div>
@@ -177,6 +179,7 @@ export const BrandCard: React.FC<BrandCardProps> = ({
   textColor = "#0E3A33",
   fontScale = 1,
   fontWeight = 800,
+  contactWidth = 22,
 }) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
@@ -188,6 +191,7 @@ export const BrandCard: React.FC<BrandCardProps> = ({
   const logoSize = base * (portrait ? 0.4 : 0.42);
   const iconSize = Math.round(base * 0.045);
   const contactFont = Math.round(base * 0.03 * fontScale);
+  const contactMaxW = contactFont * contactWidth;
   const nameSize = Math.round(base * 0.085 * fontScale);
   const taglineSize = Math.round(base * 0.028 * fontScale);
 
@@ -295,13 +299,13 @@ export const BrandCard: React.FC<BrandCardProps> = ({
 
         {/* contacts */}
         <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: base * 0.045, transform: `translateY(${contactsFloat}px)` }}>
-          <ContactRow icon={<PinIcon s={iconSize} c={primaryColor} />} delay={48} fontSize={contactFont} color={textColor}>
+          <ContactRow icon={<PinIcon s={iconSize} c={primaryColor} />} delay={48} fontSize={contactFont} color={textColor} maxW={contactMaxW}>
             {location}
           </ContactRow>
-          <ContactRow icon={<MailIcon s={iconSize} c={primaryColor} />} delay={60} fontSize={contactFont} color={textColor}>
+          <ContactRow icon={<MailIcon s={iconSize} c={primaryColor} />} delay={60} fontSize={contactFont} color={textColor} maxW={contactMaxW}>
             {email}
           </ContactRow>
-          <ContactRow icon={<PhoneIcon s={iconSize} c={primaryColor} />} delay={72} fontSize={contactFont} color={textColor}>
+          <ContactRow icon={<PhoneIcon s={iconSize} c={primaryColor} />} delay={72} fontSize={contactFont} color={textColor} maxW={contactMaxW}>
             {phone}
           </ContactRow>
         </div>
